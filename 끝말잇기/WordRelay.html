@@ -9,20 +9,33 @@
 </head>
 <body>
     <div id="root">
-        <div>{{ word }}</div>
-        <form v-on:submit="onSubmitForm">
-            <input type="text" v-model="value" ref="answer">
-            <button type="submit">입력!</button>
-        </form>
-        <div>{{ result }}</div>
+        <word-relay></word-relay>
+        <word-relay></word-relay>
+        <word-relay></word-relay>
     </div>
+    <!-- 컴포넌트는 뷰 인스턴스보다는 위에 정의되어야 한다. -->
     <script>
-        const app = new Vue({
-            el: '#root',
-            data: {
-                word: '교민',
-                result: '',
-                value: ''
+        Vue.component('word-relay', {
+            // 컴포넌트는 가장 부모 div로 감싸야 하는 규칙이 있다.
+            // 리액트와 비슷하다.
+            template: `
+                <div>
+                    <div>{{ word }}</div>
+                    <form v-on:submit="onSubmitForm">
+                        <input type="text" v-model="value" ref="answer">
+                        <button type="submit">입력!</button>
+                    </form>
+                    <div>{{ result }}</div>
+                </div>
+            `,
+            // 컴포넌트 단위로 따로 데이터가 돌아야 하기 때문에
+            // 이렇게 함수 형태로 객체를 리턴하는 형식을 취해야 한다.
+            data() {    
+                return {
+                    word: '교민',
+                    result: '',
+                    value: ''
+                }
             },
             methods: {
                 onSubmitForm(e) {
@@ -40,6 +53,11 @@
                     }
                 }
             }
+        });
+    </script>
+    <script>
+        const app = new Vue({
+            el: '#root'
         });
     </script>
 </body>
