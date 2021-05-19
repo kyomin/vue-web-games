@@ -17,9 +17,16 @@ module.exports = {
     module: {
         rules: [{
             test: /\.vue$/,
-            loader: 'vue-loader'
+            use: 'vue-loader'
+        }, {
+            test: /\.css$/,
+            use: [
+                'vue-style-loader',
+                'css-loader'
+            ]
         }]
     },
+    // 플러그인은 필수는 아니지만, 추가적 작업을 위한 것이다.
     plugins: [
         new VueLoaderPlugin()
     ],
