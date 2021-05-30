@@ -20,6 +20,19 @@ const rspCords = {
     보: '-284px'
 };
 
+// 플레이어의 점수표
+const scores = {
+    가위: 1,
+    바위: 0,
+    보: -1
+};
+
+const computerChoice = (imgCord) => {
+    return Object.entries(rspCords).find(function(v) {
+        return v[1] === imgCord;
+    })[0];
+};
+
 let interval = null;
 export default {
     data() {
@@ -35,8 +48,40 @@ export default {
         }
     },
     methods: {
+        changeHand() {
+            // setInterval 함수는 setTimeout과 달리 콜백 함수를 주기적으로 실행한다.
+            interval = setInterval(() => {
+                if (this.imgCord === rspCords.바위) {
+                    this.imgCord = rspCords.가위;
+                } else if (this.imgCord === rspCords.가위) {
+                    this.imgCord = rspCords.보;
+                } else if (this.imgCord === rspCords.보) {
+                    this.imgCord = rspCords.바위;
+                }
+            }, 100);
+        },
         onClickButton(choice) {
+            // 잠깐 컴퓨터의 손가락을 멈춰준다.
+            clearInterval(interval);
 
+            const myScore = scores[choice];
+            const cpuScore = scores[computerChoice(this.imgCord)];
+            const diff = myScore - cpuScore;
+
+            if (diff === 0) {
+                this.result = '비겼습니다.';
+            } else if ([-1, 2].includes(diff)) {
+                this.result = '이겼습니다.';
+                this.score += 1;
+            } else {
+                this.result = '졌습니다.';
+                this.score -= 1;
+            }
+
+            // 잠깐 멈춰서 결과 확인 후, 1초 후에 다시 손가락 돌려주기
+            setTimeout(() => {
+                this.changeHand();
+            }, 1000);
         }
     },
     /*
@@ -60,17 +105,7 @@ export default {
     },
     mounted() {
         console.log('mounted !!');
-
-        // setInterval 함수는 setTimeout과 달리 콜백 함수를 주기적으로 실행한다.
-        interval = setInterval(() => {
-            if (this.imgCord === rspCords.바위) {
-                this.imgCord = rspCords.가위;
-            } else if (this.imgCord === rspCords.가위) {
-                this.imgCord = rspCords.보;
-            } else if (this.imgCord === rspCords.보) {
-                this.imgCord = rspCords.바위;
-            }
-        }, 100);
+        this.changeHand();
     },
 
     // 데이터가 변경되어 화면에 보여지는 컴포넌트가 바뀔 때
