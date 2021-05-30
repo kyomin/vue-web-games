@@ -5,10 +5,19 @@
         이로인해 class가 state 값에 따라 동적으로 바뀐다.
     -->
     <div id="screen" v-bind:class="state" v-on:click="onClickScreen">{{ message }}</div>
-    <div>
-        <div>평균 시간: {{ result.reduce((a, c) => a+c, 0) / result.length || 0 }}ms</div>
-    </div>
-    <button v-on:click="onReset">리셋</button>
+    <!--  
+        template 태그는 없는 태그로 취급한다.
+        따라서, 위의 screen div와 평균시간 div, 리셋 button은 형제로 취급된다.
+        이는 그냥 묶어주기 위한 용도의 div를 대체할 때 사용한다.
+        
+        리액트의 Fragment와 유사하다.
+        다만 주의할 점은 가장 상위를 template으로 감싸지 못한다.
+        가장 바깥은 div로 감싸야 한다.
+    -->
+    <template v-if="result.length">
+        <div>평균 시간: {{ average }}ms</div>
+        <button v-on:click="onReset">리셋</button>
+    </template>
   </div>
 </template>
 
@@ -23,6 +32,14 @@ export default {
             result: [],
             state: 'waiting',
             message: '클릭해서 시작하세요'
+        }
+    },
+    // 일반 데이터를 가공해서 쓸 때에는 보통 computed를 쓴다.
+    // 이 값이 캐싱이 돼서 만일 레이아웃의 어떤 데이터가 변경 되어도
+    // 다시 재 계산하는 것이 아니라 캐싱된 데이터를 가져오므로 최적화에 좋다. 
+    computed: {
+        average() {
+            return this.result.reduce((a, c) => a+c, 0) / this.result.length || 0;
         }
     },
     methods: {
