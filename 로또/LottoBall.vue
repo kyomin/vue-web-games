@@ -1,17 +1,33 @@
 <template>
-  <div class="ball" :style="{ background }">{{ number }}</div>
+  <div class="ball" :style="styleObject">{{ number }}</div>
 </template>
 
 <script>
 export default {
     name: 'LottoBall',  // 컴포넌트의 이름 지정. 지정하지 않으면 파일명이 디폴트로 컴포넌트명이 된다.
-    props: ['number'],
-    data() {
-        let background;
+    props: {
+        number: Number
+    },
+    // 기존 값을 이용해서 새로운 것을 계산할 때는 computed를 이용한다!
+    computed: {
+        styleObject() {
+            let background;
+            if (this.number < 10) {
+                background = 'red';
+            } else if (this.number < 20) {
+                background = 'orange';
+            } else if (this.number < 30) {
+                background = 'yellow';
+            } else if (this.number < 40) {
+                background = 'blue';
+            } else {
+                background = 'green';
+            }
 
-        return {
-            background
-        };
+            return {
+                background
+            };
+        }
     }
 }
 </script>
