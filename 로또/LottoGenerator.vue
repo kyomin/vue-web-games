@@ -59,7 +59,6 @@ export default {
             this.winBalls = [];
             this.bonus = null;
             this.redo = false;
-            this.showBalls();
         },
         showBalls() {
             for (let i=0; i<this.winNumbers.length-1; i++) {
@@ -87,8 +86,20 @@ export default {
             clearTimeout(t);
         });
     },
-    watch: {
 
+    // 어떤 값이 바뀌었는지, 안 바뀌었는지 감시하는 역할을 한다.
+    // computed는 새로운 값을 리턴하고,
+    // watch는 특정 동작을 수행한다고 생각하면 된다.
+    watch: {
+        // winBalls 데이터의 값을 관찰하고 싶다!
+        // 변화가 생기면 아래 함수가 실행이 된다.
+        // 하지만 너무 watch를 남용하면 코드가 꼬이게 된다.
+        winBalls(value, oldValue) {
+            console.log(value, oldValue);
+            if (value.length === 0) {
+                this.showBalls();
+            }
+        }
     }
 }
 </script>
