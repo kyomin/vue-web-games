@@ -20,6 +20,11 @@ export default {
     },
     components: {
         TdComponent
+    },
+    data() {
+        return {
+            parent: 'I am your father'
+        }
     }
 }
 </script>
