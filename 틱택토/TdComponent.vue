@@ -11,13 +11,14 @@ export default {
     },
     methods: {
         onClickTd() {
-            // this.$root.$data : 최상위 부모의 데이터에 접근
-            // this.$parent.$data : 바로 위 부모의 데이터에 접근
-            console.log(this.$root.$data);
-            console.log(this.$parent.$data);
+            const rootData = this.$root.$data;
 
-            // 부모 데이터에 접근해서 턴의 변환을 최하위 자식 컴포넌트에서 조작
-            this.$root.$data.turn = this.$root.$data.turn === 'O' ? 'X' : 'O';
+            // * 주의 : 인덱스를 사용해 배열에 접근해서 데이터를 바꾸면, 화면에 반영이 안 된다.
+            // 이는 자바스크립트의 특성이라 뷰도 어쩔 수 없이 따르는 것이다.
+            // 따라서 위의 방식이 아닌, 아래의 방식으로 바꿔줘야 한다.
+            // this.$root.$data.tableData[this.rowIndex][this.cellIndex] = this.$root.$data.turn;
+            this.$set(rootData.tableData[this.rowIndex], this.cellIndex, rootData.turn);
+            rootData.turn = rootData.turn === 'O' ? 'X' : 'O';
         }
     }
 }
