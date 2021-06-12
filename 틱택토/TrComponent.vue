@@ -4,27 +4,31 @@
             v-for="(cellData, index) in rowData"
             :key="index"
             :row-index="rowIndex"
-            :cell-data="cellData"
             :cell-index="index"
         />
     </tr>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import TdComponent from './TdComponent';
 
 export default {
     props: {
-        rowData: Array,
         rowIndex: Number
     },
     components: {
         TdComponent
     },
-    data() {
-        return {
-            parent: 'I am your father'
-        }
+    computed: {
+        ...mapState({
+            rowData(state) {
+                return state.tableData[this.rowIndex];
+            }
+        })
+        // rowData() {
+        //     return this.$store.state.tableData[this.rowIndex]
+        // }
     }
 }
 </script>

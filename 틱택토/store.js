@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+// Vue와 Vuex를 연결한다.
+Vue.use(Vuex);
+
 // 변수를 통해 관리해야 오타 낼 확률이 줄어든다.
 export const SET_WINNER = 'SET_WINNER';
 export const CLICK_CELL = 'CLICK_CELL';
@@ -19,7 +22,9 @@ export default new Vuex.Store({
         winner: ''
     },
     getters: {  // Vue의 computed와 비슷
-
+        winnerMessage(state) {
+            return state.winner + '님이 승리하셨습니다';
+        }
     },
     mutations: {    // state를 동기적으로 수정할 때 사용. state는 얘를 통해서 update해야 한다.
         // 뮤테이션의 함수는 대문자로 명명하는게 Vue 커뮤니티의 규칙이다.
