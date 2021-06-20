@@ -78,6 +78,7 @@ export default new Vuex.Store({
             mine: 0
         },
         timer: 0,
+        halted: true,   // 게임 중단 여부
         result: ''
     },
     getters: {  
@@ -104,13 +105,16 @@ export default new Vuex.Store({
             };
             state.tableData = plantMine(row, cell, mine);
             state.timer = 0;
+            state.halted = false;
         },
         [OPEN_CELL](state) {},
         [CLICK_MINE](state) {},
         [FLAG_CELL](state) {},
         [QUESTION_CELL](state) {},
         [NORMALIZE_CELL](state) {},
-        [INCREMENT_TIMER](state) {},
+        [INCREMENT_TIMER](state) {
+            state.timer += 1;
+        },
     }, 
     actions: {  
 
