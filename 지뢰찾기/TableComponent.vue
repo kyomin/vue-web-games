@@ -1,18 +1,26 @@
 <template>
     <table>
         <tr v-for="(rowData, rowIndex) in tableData" :key="rowIndex">
-            <td v-for="(cellData, cellIndex) in rowData" :key="cellIndex" :style="cellDataStyle(rowIndex, cellIndex)">{{ cellDataText(rowIndex, cellIndex) }}</td>
+            <td 
+                v-for="(cellData, cellIndex) in rowData" 
+                :key="cellIndex" 
+                :style="cellDataStyle(rowIndex, cellIndex)"
+                @click="onClickTd(rowIndex, cellIndex)"
+                @contextmenu.prevent="onRightClick(rowIndex, cellIndex)"
+            >
+                {{ cellDataText(rowIndex, cellIndex) }}
+            </td>
         </tr>
     </table>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import { CODE } from './store';
+import { CODE, FLAG_CELL, OPEN_CELL, QUESTION_CELL, NORMALIZE_CELL } from './store';
 
 export default {
     computed: {
-        ...mapState(['tableData']),
+        ...mapState(['tableData', 'halted']),
         
         cellDataStyle(state) { 
             return (row, cell) => {
@@ -61,6 +69,35 @@ export default {
                         return '';
                 }
             };
+        }
+    },
+    methods: {
+        onClickTd(row, cell) {
+            // 게임이 중단된 경우는 칸 클릭 무효화
+            if (this.halted)
+                return;
+            
+            this.$store.commit(OPEN_CELL, { row, cell });
+        },
+        onRightClick(row, cell) {
+            // 게임이 중단된 경우는 칸 클릭 무효화
+            if (this.halted)
+                return;
+
+            switch (this.tableData[row][cell]) {
+                case CODE.NORMAL:
+                case CODE.MINE:
+                    this.$store.commit(FLAG_CELL, { row, cell });
+                    return;
+                case CODE.FLAG_MINE:
+                case CODE.FLAG:
+                    this.$store.commit(QUESTION_CELL, { row, cell });
+                    return;
+                case CODE.QUESTION_MINE:
+                case CODE.QUESTION:
+                    this.$store.commit(NORMALIZE_CELL, { row, cell });
+                    return;
+            }
         }
     }
 }
