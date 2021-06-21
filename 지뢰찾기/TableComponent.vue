@@ -16,7 +16,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { CODE, FLAG_CELL, OPEN_CELL, QUESTION_CELL, NORMALIZE_CELL } from './store';
+import { CODE, FLAG_CELL, OPEN_CELL, QUESTION_CELL, NORMALIZE_CELL, CLICK_MINE } from './store';
 
 export default {
     computed: {
@@ -66,7 +66,7 @@ export default {
                     case CODE.CLICKED_MINE:
                         return '펑';
                     default:
-                        return '';
+                        return this.$store.state.tableData[row][cell] || '';
                 }
             };
         }
@@ -76,8 +76,15 @@ export default {
             // 게임이 중단된 경우는 칸 클릭 무효화
             if (this.halted)
                 return;
-            
-            this.$store.commit(OPEN_CELL, { row, cell });
+
+            switch (this.tableData[row][cell]) {
+                case CODE.NORMAL:
+                    return this.$store.commit(OPEN_CELL, { row, cell });
+                case CODE.MINE:
+                    return this.$store.commit(CLICK_MINE, { row, cell });
+                default:
+                    return;
+            }
         },
         onRightClick(row, cell) {
             // 게임이 중단된 경우는 칸 클릭 무효화
