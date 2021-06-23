@@ -79,7 +79,8 @@ export default new Vuex.Store({
         },
         timer: 0,
         halted: true,   // 게임 중단 여부
-        result: ''
+        result: '',
+        openedCount : 0
     },
     getters: {  
 
@@ -106,8 +107,11 @@ export default new Vuex.Store({
             state.tableData = plantMine(row, cell, mine);
             state.timer = 0;
             state.halted = false;
+            state.openedCount = 0;
+            state.result = '';
         },
         [OPEN_CELL](state, { row, cell }) {
+            let openedCount = 0;
             const checked = [];
             function checkAround(row, cell) {    // 주변 8칸 지뢰 개수 검색
                 // 배열 범위를 벗어난 경우
@@ -172,9 +176,22 @@ export default new Vuex.Store({
                         }
                     });
                 }
+                if (state.tableData[row][cell] === CODE.NORMAL) {
+                    openedCount += 1;
+                }
                 Vue.set(state.tableData[row], cell, counted.length);
             }
             checkAround(row, cell);
+
+            let halted = false;
+            let result = '';
+            if ((state.data.row*state.data.cell) - state.data.mine === state.openedCount + openedCount) {
+                halted = true;
+                result = `${state.timer}초만에 승리하셨습니다.`;
+            }
+            state.openedCount += openedCount;
+            state.halted = halted;
+            state.result = result;
         },
         [CLICK_MINE](state, { row, cell }) {
             // 지뢰 밟았으니 게임 중단
