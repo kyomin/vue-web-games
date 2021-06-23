@@ -1,4 +1,4 @@
 import Vue from 'vue';
-import MineSweeper from './MineSweeper.vue';
+import Router from './Router.vue';
 
-new Vue(MineSweeper).$mount('#root');
+new Vue(Router).$mount('#root');
