@@ -108,7 +108,22 @@ export default new Vuex.Store({
             state.halted = false;
         },
         [OPEN_CELL](state, { row, cell }) {
-            function checkAround() {
+            const checked = [];
+            function checkAround(row, cell) {    // 주변 8칸 지뢰 개수 검색
+                // 배열 범위를 벗어난 경우
+                let checkRowOrCellIsUndefined = row < 0 || row >= state.tableData.length || cell < 0 || cell >= state.tableData[0].length;
+                if (checkRowOrCellIsUndefined)
+                    return;
+
+                if ([CODE.OPENED, CODE.FLAG, CODE.FLAG_MINE, CODE.QUESTION_MINE, CODE.QUESTION].includes(state.tableData[row][cell]))
+                    return;
+                
+                // 이미 방문했던 칸이면
+                if (checked.includes(row + '/' + cell))
+                    return;
+                else
+                    checked.push(row + '/' + cell);
+
                 let around = [];
                 if (state.tableData[row-1]) {
                     around = around.concat([
@@ -133,11 +148,33 @@ export default new Vuex.Store({
                     return [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(v);
                 });
 
-                return counted.length;
-            }
+                if (counted.length === 0 && row > -1) {     // 주변 칸에 지뢰가 하나도 없으면
+                    // 주변 8칸 몰아 넣기!
+                    const near = [];
+                    if (row-1 > -1) {
+                        near.push([row-1, cell-1]);
+                        near.push([row-1, cell]);
+                        near.push([row-1, cell+1]);
+                    }
+                    near.push([row, cell-1]);
+                    near.push([row, cell+1]);
+                    if (row+1 < state.tableData.length) {
+                        near.push([row+1, cell-1]);
+                        near.push([row+1, cell]);
+                        near.push([row+1, cell+1]);
+                    }
 
-            const count = checkAround();
-            Vue.set(state.tableData[row], cell, count);
+                    // 몰아 넣은 8칸 반복하면서
+                    near.forEach((n) => {
+                        // 그 칸이 연 칸이 아니라면
+                        if (state.tableData[n[0]][n[1]] !== CODE.OPENED) {
+                            checkAround(n[0], n[1]);
+                        }
+                    });
+                }
+                Vue.set(state.tableData[row], cell, counted.length);
+            }
+            checkAround(row, cell);
         },
         [CLICK_MINE](state, { row, cell }) {
             // 지뢰 밟았으니 게임 중단
